@@ -1,0 +1,5 @@
+myenv/
+__pycache__/
+*.pyc
+auth_fail.log
+db.sqlite3
