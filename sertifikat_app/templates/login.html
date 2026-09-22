@@ -69,7 +69,15 @@
 
     <div class="login-box">
         <h2>Portal E-Sertifikat</h2>
-        
+        <!-- Tambahkan blok ini -->
+        {% if error_message %}
+            <div style="background-color: #ffebee; color: #c62828; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; text-align: center; border: 1px solid #ef9a9a;">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <!-- Akhir blok tambahan -->
+
+        <form method="POST" action="">
         <!-- Form wajib menggunakan method POST -->
         <form method="POST" action="">
             <!-- TAG INI WAJIB ADA DI DJANGO UNTUK KEAMANAN (Anti CSRF) -->

@@ -42,10 +42,12 @@ def login_view(request):
             return response
             
         else:
-            # === JIKA LOGIN GAGAL ===
-            # Catat IP penyerang ke file auth_fail.log
+           # === JIKA LOGIN GAGAL ===
             ip_address = get_client_ip(request)
             logger.warning(ip_address)
-            return HttpResponse("Login Gagal! IP Anda telah dicatat oleh sistem keamanan.", status=401)
+            # KITA UBAH BAGIAN INI: Kembalikan ke halaman login, tapi bawa pesan error
+            return render(request, 'login.html', {
+                'error_message': 'Login Gagal! Aktivitas mencurigakan dari IP Anda telah dicatat.'
+            })
             
     return render(request, 'login.html')
