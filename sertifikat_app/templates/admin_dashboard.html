@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Security Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1, h2 { color: #2c3e50; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #34495e; color: white; }
+        .form-group { margin-bottom: 15px; }
+        .btn { background-color: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background-color: #2ecc71; }
+        /* Style khusus untuk Console Kriptografi TA */
+        .crypto-console { background-color: #1e1e1e; color: #00ff00; padding: 20px; border-radius: 5px; font-family: 'Courier New', Courier, monospace; margin-top: 30px; box-shadow: inset 0 0 10px #000; }
+        .crypto-console h3 { color: #fff; border-bottom: 1px dashed #00ff00; padding-bottom: 10px; margin-top: 0; }
+        .badge-sukses { background-color: #27ae60; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .badge-pending { background-color: #e67e22; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ Dashboard Keamanan & Enkripsi Sertifikat</h1>
+        <p>Unggah file PDF asli untuk dieksekusi menggunakan modul Kriptografi Hybrid (AES-256-GCM & RSA-2048).</p>
+
+        <!-- FORM UPLOAD PDF -->
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label><b>Pilih Peserta:</b></label><br>
+                <select name="peserta_id" required style="padding: 8px; width: 100%; margin-top: 5px;">
+                    <option value="">-- Pilih Peserta --</option>
+                    {% for p in daftar_peserta %}
+                        <option value="{{ p.id }}">{{ p.nama_peserta }} (Username: {{ p.username }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label><b>Upload File PDF Asli:</b></label><br>
+                <input type="file" name="file_sertifikat" accept="application/pdf" required style="margin-top: 5px;">
+            </div>
+            <button type="submit" class="btn">🔒 Enkripsi & Simpan ke Server</button>
+        </form>
+
+        <!-- VISUALISASI LOG KRIPTOGRAFI UNTUK DOSEN PENGUJI -->
+        {% if crypto_log %}
+        <div class="crypto-console">
+            <h3>[+] PROSES KRIPTOGRAFI SELESAI [+]</h3>
+            <p>> Target Peserta   : {{ crypto_log.peserta }}</p>
+            <p>> Ukuran File Asli : {{ crypto_log.ukuran_asli }}</p>
+            <p>> Ukuran Ciphertext: {{ crypto_log.ukuran_enkripsi }}</p>
+            <p>> Algoritma Blok   : {{ crypto_log.info_aes }}</p>
+            <p>> Algoritma Kunci  : {{ crypto_log.info_rsa }}</p>
+            <p>> Sample Ciphertext: {{ crypto_log.sample_ciphertext }}</p>
+            <p style="color: #3498db;">> Status           : {{ crypto_log.status }}</p>
+        </div>
+        {% endif %}
+
+        <h2>Daftar Peserta & Status Sertifikat</h2>
+        <table>
+            <tr>
+                <th>Nama Peserta</th>
+                <th>Username</th>
+                <th>Status Enkripsi</th>
+                <th>Waktu Penambahan</th>
+            </tr>
+            {% for p in daftar_peserta %}
+            <tr>
+                <td>{{ p.nama_peserta }}</td>
+                <td>{{ p.username }}</td>
+                <td>
+                    {% if p.status_enkripsi %}
+                        <span class="badge-sukses">Terenkripsi (*.enc)</span>
+                    {% else %}
+                        <span class="badge-pending">Menunggu File PDF</span>
+                    {% endif %}
+                </td>
+                <td>{{ p.waktu_dibuat|date:"d M Y, H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center;">Belum ada data peserta di Database.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

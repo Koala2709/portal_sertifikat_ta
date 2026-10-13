@@ -16,9 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from sertifikat_app.views import login_view
+# PENTING: Ganti 'sertifikat_app' dengan nama folder aplikasi Django-mu yang sebenarnya
+from sertifikat_app import views 
 
 urlpatterns = [
+    # Rute bawaan Django untuk database admin
     path('admin/', admin.site.urls),
-    path('', login_view, name='login'),
+    
+    # Rute untuk Peserta (Login & Download)
+    # String kosong '' berarti ini akan jadi halaman pertama yang terbuka (Landing Page)
+    path('', views.login_view, name='login_peserta'), 
+    
+    # Rute BARU untuk Admin (Upload PDF & Lihat Log Enkripsi)
+    # Cara aksesnya nanti: 192.168.18.128:8000/admin-sertif/
+    path('admin-sertif/', views.admin_upload_view, name='admin_dashboard'),
 ]
